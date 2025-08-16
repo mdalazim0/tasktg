@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Ad Verification Task</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <!-- Telegram WebApp & Monetag SDKs -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src='//libtl.com/sdk.js' data-zone='9704279' data-sdk='show_9704279'></script>
+    <style>
+        :root {
+            --font-family: 'Nunito', sans-serif;
+            --bg-light: #f4f4f9; --card-bg-light: #ffffff; --text-light: #1c1c1e; --primary-light: #007aff; --border-light: #e0e0e0;
+            --bg-dark: #121212; --card-bg-dark: #1c1c1e; --text-dark: #ffffff; --primary-dark: #0a84ff; --border-dark: #38383a;
+            --green-color: #34c759;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-family);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Aligned to top for profile header */
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        body.light-theme { background-color: var(--bg-light); color: var(--text-light); }
+        body.dark-theme { background-color: var(--bg-dark); color: var(--text-dark); }
+
+        #app-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* NEW: Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        body.light-theme .profile-header { background-color: var(--card-bg-light); }
+        body.dark-theme .profile-header { background-color: var(--card-bg-dark); }
+
+        #user-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid;
+        }
+        body.light-theme #user-photo { border-color: var(--primary-light); }
+        body.dark-theme #user-photo { border-color: var(--primary-dark); }
+
+        #user-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        #app {
+            width: 100%;
+            text-align: center;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        body.light-theme #app { background-color: var(--card-bg-light); }
+        body.dark-theme #app { background-color: var(--card-bg-dark); }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .icon { font-size: 4rem; margin-bottom: 20px; }
+        .light-theme .icon { color: var(--primary-light); }
+        .dark-theme .icon { color: var(--primary-dark); }
+        .icon.success { color: var(--green-color); }
+        .icon.error { color: #ff3b30; }
+
+        h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 10px; }
+        p { font-size: 1rem; opacity: 0.8; margin-bottom: 30px; }
+
+        .action-btn { width: 100%; padding: 18px; font-size: 1.1rem; font-weight: 700; color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+        .light-theme .action-btn { background-color: var(--primary-light); }
+        .dark-theme .action-btn { background-color: var(--primary-dark); }
+        .action-btn.copy-btn { background-color: var(--green-color); }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .code-box { padding: 15px; margin-bottom: 25px; border-radius: 10px; font-family: 'Menlo', 'Courier New', monospace; font-size: 1.2rem; font-weight: 600; word-wrap: break-word; border: 2px dashed; }
+        .light-theme .code-box { background-color: var(--bg-light); border-color: var(--primary-light); }
+        .dark-theme .code-box { background-color: var(--bg-dark); border-color: var(--primary-dark); }
+
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+        .modal-content { color: white; text-align: center; }
+        .loader { border: 5px solid #f3f3f3; border-radius: 50%; border-top: 5px solid #fff; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="app-wrapper">
+        <!-- User Profile Header -->
+        <header class="profile-header">
+            <img id="user-photo" src="" alt="P">
+            <h1 id="user-name">Loading...</h1>
+        </header>
+
+        <div id="app">
+            <!-- View 1: Task in Progress -->
+            <div id="task-view" class="view active">
+                <i class="fas fa-shield-alt icon"></i>
+                <h2>Unlock Your Code</h2>
+                <p>Watch 20 ads to reveal and copy your verification code.</p>
+                <button id="watch-ad-btn" class="action-btn">Loading...</button>
+            </div>
+
+            <!-- View 2: Task Completed -->
+            <div id="result-view" class="view">
+                <i class="fas fa-check-circle icon success"></i>
+                <h2>Code Unlocked!</h2>
+                <div id="verification-code" class="code-box"></div>
+                <button id="copy-code-btn" class="action-btn copy-btn">Copy Code & Close</button>
+            </div>
+
+            <!-- View 3: Invalid Start -->
+            <div id="invalid-view" class="view">
+                 <i class="fas fa-exclamation-triangle icon error"></i>
+                 <h2>No Task Found</h2>
+                 <p>This page was opened without a valid task code. Please start from your bot again.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Ad Loading -->
+    <div id="loading-modal" class="modal">
+        <div class="modal-content">
+            <div class="loader"></div>
+            <p style="margin-top: 15px; font-size: 1.1rem;">Loading Ad...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tg = window.Telegram.WebApp;
+
+            const TOTAL_ADS_REQUIRED = 20;
+
+            // DOM Elements
+            const userPhotoElem = document.getElementById('user-photo');
+            const userNameElem = document.getElementById('user-name');
+            const taskView = document.getElementById('task-view');
+            const resultView = document.getElementById('result-view');
+            const invalidView = document.getElementById('invalid-view');
+            const watchAdBtn = document.getElementById('watch-ad-btn');
+            const verificationCodeElem = document.getElementById('verification-code');
+            const copyCodeBtn = document.getElementById('copy-code-btn');
+            const loadingModal = document.getElementById('loading-modal');
+
+            let secretCode = null;
+            let currentAdCount = 0;
+
+            const init = () => {
+                tg.ready();
+                tg.expand();
+                document.body.className = `${tg.colorScheme || 'light'}-theme`;
+
+                // Set User Profile Info
+                const user = tg.initDataUnsafe.user;
+                if (user) {
+                    userPhotoElem.src = user.photo_url || ''; // Fallback to empty to avoid broken image icon
+                    userNameElem.textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Welcome!';
+                }
+
+                // Get the secret code from the start parameter
+                secretCode = tg.initDataUnsafe.start_param;
+
+                if (!secretCode) {
+                    taskView.classList.remove('active');
+                    invalidView.classList.add('active');
+                    return;
+                }
+
+                // Load progress specific to this secret code
+                currentAdCount = parseInt(localStorage.getItem(`ad_progress_${secretCode}`)) || 0;
+
+                updateUI();
+                setupEventListeners();
+            };
+
+            const updateUI = () => {
+                if (currentAdCount >= TOTAL_ADS_REQUIRED) {
+                    taskView.classList.remove('active');
+                    resultView.classList.add('active');
+                    verificationCodeElem.textContent = secretCode;
+                } else {
+                    taskView.classList.add('active');
+                    resultView.classList.remove('active');
+                    watchAdBtn.textContent = `Watch Ad (${currentAdCount}/${TOTAL_ADS_REQUIRED})`;
+                    watchAdBtn.disabled = false;
+                }
+            };
+
+            const setupEventListeners = () => {
+                watchAdBtn.addEventListener('click', handleWatchAd);
+                copyCodeBtn.addEventListener('click', handleCopyCode);
+            };
+
+            const handleWatchAd = () => {
+                if (currentAdCount >= TOTAL_ADS_REQUIRED) return;
+                loadingModal.style.display = 'flex';
+
+                show_9704279().then(() => {
+                    currentAdCount++;
+                    localStorage.setItem(`ad_progress_${secretCode}`, currentAdCount);
+
+                    tg.HapticFeedback.notificationOccurred('success');
+
+                    // NEW: Show notification after each ad
+                    tg.showAlert(`Ad completed! You have watched ${currentAdCount} out of ${TOTAL_ADS_REQUIRED} ads.`);
+
+                    updateUI();
+                }).catch((error) => {
+                    tg.showAlert("Ad could not be loaded. Please try again.");
+                }).finally(() => {
+                    loadingModal.style.display = 'none';
+                });
+            };
+
+            const handleCopyCode = () => {
+                navigator.clipboard.writeText(secretCode).then(() => {
+                    localStorage.removeItem(`ad_progress_${secretCode}`);
+                    tg.showAlert('Code copied successfully!', () => tg.close());
+                }).catch(err => {
+                    tg.showAlert('Failed to copy code. Please try again.', true);
+                });
+            };
+
+            init();
+        });
+    </script>
+</body>
+</html>
